@@ -12,21 +12,20 @@ import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { Snippet } from "@prisma/client";
+import { Snippet as PrismaSnippet } from "@prisma/client";
 
 // Lazy load components that are not immediately needed
 const CommentsList = lazy(() => import("@/components/comments-list"));
 const CommentForm = lazy(() => import("@/components/comment-form"));
 
-type Snippet = {
+interface Snippet {
   id: string;
   title: string;
-  description: string | null;
+  description: string;
   code: string;
   language: string;
-  tags: string[];
   author: {
-    name: string | null;
+    name: string;
     image: string | null;
   };
   createdAt: string;
@@ -34,8 +33,9 @@ type Snippet = {
     likes: number;
     comments: number;
   };
-  views: number;
-};
+  comments: Comment[];
+  isLiked?: boolean;
+}
 
 function LoadingSnippet() {
   return (
