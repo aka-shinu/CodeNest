@@ -15,7 +15,7 @@ export default function CommentForm({ snippetId }: { snippetId: string }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!session) {
+    if (!session?.user) {
       toast({
         title: "Authentication required",
         description: "Please sign in to comment.",

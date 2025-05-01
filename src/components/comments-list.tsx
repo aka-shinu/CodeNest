@@ -13,6 +13,7 @@ type Comment = {
   author: {
     name: string | null;
     image: string | null;
+    email: string | null;
   };
   createdAt: string;
 };

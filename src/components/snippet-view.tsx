@@ -32,6 +32,17 @@ const CommentForm = dynamic(() => import('./comment-form'), {
   </div>
 });
 
+interface Comment {
+  id: string;
+  content: string;
+  author: {
+    name: string | null;
+    image: string | null;
+    email: string | null;
+  };
+  createdAt: string;
+}
+
 interface Snippet {
   id: string;
   title: string;
@@ -41,6 +52,7 @@ interface Snippet {
   author: {
     name: string;
     image: string | null;
+    email: string | null;
   };
   createdAt: string;
   _count: {
@@ -49,6 +61,7 @@ interface Snippet {
   };
   comments: Comment[];
   isLiked?: boolean;
+  views?: number;
 }
 
 function LoadingSnippet() {
