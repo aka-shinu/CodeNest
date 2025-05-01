@@ -205,18 +205,18 @@ export default function SnippetPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen p-4 sm:p-8">
       <div className="max-w-4xl mx-auto">
-        <Link href="/snippets" className="inline-flex items-center text-gray-400 hover:text-white mb-8">
+        <Link href="/snippets" className="inline-flex items-center text-gray-400 hover:text-white mb-6 sm:mb-8">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to snippets
         </Link>
 
-        <div className="bg-gray-900 rounded-lg p-6">
-          <h1 className="text-2xl font-bold text-white mb-2">{snippet.title}</h1>
-          <p className="text-gray-400 mb-6">{snippet.description}</p>
+        <div className="bg-gray-900 rounded-lg p-4 sm:p-6">
+          <h1 className="text-xl sm:text-2xl font-bold text-white mb-2 break-words">{snippet.title}</h1>
+          <p className="text-gray-400 mb-4 sm:mb-6 break-words">{snippet.description}</p>
 
-          <div className="bg-gray-800 rounded-lg p-4 mb-6">
+          <div className="bg-gray-800 rounded-lg p-2 sm:p-4 mb-4 sm:mb-6 overflow-x-auto">
             <SyntaxHighlighter
               language={snippet.language}
               style={atomDark}
@@ -224,13 +224,15 @@ export default function SnippetPage({ params }: { params: { id: string } }) {
                 margin: 0,
                 borderRadius: '0.5rem',
                 background: 'transparent',
+                fontSize: '0.875rem',
               }}
+              wrapLongLines={true}
             >
               {snippet.code}
             </SyntaxHighlighter>
           </div>
 
-          <div className="flex items-center justify-between mt-8 pt-4 border-t border-gray-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-6 sm:mt-8 pt-4 border-t border-gray-800 gap-4 sm:gap-0">
             <div className="flex items-center space-x-4">
               <button
                 onClick={handleLike}
@@ -249,29 +251,29 @@ export default function SnippetPage({ params }: { params: { id: string } }) {
                 <span>{snippet._count.comments}</span>
               </div>
             </div>
-            <div className="flex items-center text-gray-400">
-              <span>{snippet.author.name}</span>
+            <div className="flex items-center text-sm sm:text-base text-gray-400">
+              <span className="truncate max-w-[150px]">{snippet.author.name}</span>
               <span className="mx-2">•</span>
-              <span>{formatDistanceToNow(new Date(snippet.createdAt), { addSuffix: true })}</span>
+              <span className="whitespace-nowrap">{formatDistanceToNow(new Date(snippet.createdAt), { addSuffix: true })}</span>
             </div>
           </div>
 
-          <div className="mt-8">
-            <h2 className="text-xl font-orbitron text-white mb-4">Comments</h2>
+          <div className="mt-6 sm:mt-8">
+            <h2 className="text-lg sm:text-xl font-orbitron text-white mb-4">Comments</h2>
             {session && (
               <form onSubmit={handleComment} className="mb-6">
                 <textarea
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Add a comment..."
-                  className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-cyan-500/30 focus:outline-none focus:ring-1 focus:ring-cyan-500/30"
+                  className="w-full bg-gray-800/50 border border-gray-700 rounded-lg px-3 py-2 text-sm sm:text-base text-white focus:border-cyan-500/30 focus:outline-none focus:ring-1 focus:ring-cyan-500/30"
                   rows={3}
                   disabled={isSubmitting}
                 />
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="mt-2 px-4 py-2 bg-cyan-500/20 text-cyan-300 rounded-lg hover:bg-cyan-500/30 disabled:opacity-50"
+                  className="mt-2 px-4 py-2 text-sm sm:text-base bg-cyan-500/20 text-cyan-300 rounded-lg hover:bg-cyan-500/30 disabled:opacity-50"
                 >
                   {isSubmitting ? 'Posting...' : 'Post Comment'}
                 </button>
@@ -279,26 +281,26 @@ export default function SnippetPage({ params }: { params: { id: string } }) {
             )}
             <div className="space-y-4">
               {snippet.comments?.map((comment) => (
-                <div key={comment.id} className="bg-gray-800/50 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-white">{comment.author.name}</span>
-                      <span className="text-gray-400 text-sm">
+                <div key={comment.id} className="bg-gray-800/50 rounded-lg p-3 sm:p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2 sm:gap-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-medium text-white text-sm sm:text-base break-words">{comment.author.name}</span>
+                      <span className="text-gray-400 text-xs sm:text-sm whitespace-nowrap">
                         {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
                       </span>
                     </div>
                     {session?.user?.email === comment.author.email && (
                       <button
                         onClick={() => handleDeleteComment(comment.id)}
-                        className="text-gray-400 hover:text-red-500 transition-colors"
+                        className="text-gray-400 hover:text-red-500 transition-colors self-start sm:self-auto"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clipRule="evenodd" />
                         </svg>
                       </button>
                     )}
                   </div>
-                  <p className="text-gray-300">{comment.content}</p>
+                  <p className="text-gray-300 text-sm sm:text-base break-words">{comment.content}</p>
                 </div>
               ))}
             </div>
