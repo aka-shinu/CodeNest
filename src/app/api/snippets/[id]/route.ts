@@ -3,6 +3,38 @@ import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/db";
 import { unstable_cache } from "next/cache";
 
+interface SnippetWithLikes {
+  id: string;
+  title: string;
+  description: string;
+  code: string;
+  language: string;
+  visibility: 'public' | 'private';
+  authorId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  author: {
+    name: string | null;
+    image: string | null;
+    email: string | null;
+  };
+  comments: Array<{
+    id: string;
+    content: string;
+    author: {
+      name: string | null;
+      image: string | null;
+      email: string | null;
+    };
+    createdAt: Date;
+  }>;
+  likes: Array<{ userId: string }> | false;
+  _count: {
+    likes: number;
+    comments: number;
+  };
+}
+
 // Cache the snippet fetch for 1 minute in development, 1 hour in production
 const getSnippetFromDb = unstable_cache(
   async (id: string, userId?: string) => {
@@ -52,13 +84,13 @@ const getSnippetFromDb = unstable_cache(
             },
           },
         },
-      });
+      }) as SnippetWithLikes | null;
 
       if (!snippet) return null;
 
       return {
         ...snippet,
-        isLiked: userId ? snippet.likes.length > 0 : false,
+        isLiked: userId ? (Array.isArray(snippet.likes) ? snippet.likes.length > 0 : false) : false,
         likes: undefined, // Remove the likes array from the response
       };
     } catch (error) {
