@@ -1,15 +1,13 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/db";
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
+): Promise<NextResponse> {
   try {
     const session = await getServerSession();
-    const id = params.id;
 
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -18,104 +16,9 @@ export async function POST(
       );
     }
 
-    // Handle everything in a transaction to prevent race conditions
-    const result = await prisma.$transaction(async (tx) => {
-      // First verify the snippet exists
-      const snippet = await tx.snippet.findUnique({
-        where: { id: id },
-        select: { id: true }
-      });
-
-      if (!snippet) {
-        throw new Error("Snippet not found");
-      }
-
-      const user = await tx.user.findUnique({
-        where: { email: session.user.email },
-        select: { id: true }
-      });
-
-      if (!user) {
-        throw new Error("User not found");
-      }
-
-      // Check if like exists
-      const existingLike = await tx.like.findUnique({
-        where: {
-          userId_snippetId: {
-            userId: user.id,
-            snippetId: id,
-          },
-        },
-      });
-
-      if (existingLike) {
-        // Unlike - delete the like
-        await tx.like.delete({
-          where: {
-            userId_snippetId: {
-              userId: user.id,
-              snippetId: id,
-            },
-          },
-        });
-      } else {
-        // Like - create new like
-        await tx.like.create({
-          data: {
-            userId: user.id,
-            snippetId: id,
-          },
-        });
-      }
-
-      // Get final like count
-      const likeCount = await tx.like.count({
-        where: {
-          snippetId: id,
-        },
-      });
-
-      return {
-        liked: !existingLike,
-        likeCount,
-      };
-    });
-
-    return NextResponse.json(result);
-  } catch (error) {
-    console.error("Error handling like:", error);
-    const message = error instanceof Error ? error.message : "Failed to handle like";
-    return NextResponse.json(
-      { error: message },
-      { status: 
-        message === "User not found" ? 404 :
-        message === "Snippet not found" ? 404 :
-        500
-      }
-    );
-  }
-}
-
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const session = await getServerSession();
-    const id = params.id;
-
-    if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: "Authentication required" },
-        { status: 401 }
-      );
-    }
-
-    // Get user from database using email
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true }
+      select: { id: true },
     });
 
     if (!user) {
@@ -125,20 +28,84 @@ export async function DELETE(
       );
     }
 
-    await prisma.like.delete({
-      where: {
-        userId_snippetId: {
-          userId: user.id,
-          snippetId: id,
-        },
+    const snippet = await prisma.snippet.findUnique({
+      where: { id: params.id },
+      select: { id: true },
+    });
+
+    if (!snippet) {
+      return NextResponse.json(
+        { error: "Snippet not found" },
+        { status: 404 }
+      );
+    }
+
+    const like = await prisma.like.create({
+      data: {
+        userId: user.id,
+        snippetId: snippet.id,
       },
     });
 
-    return NextResponse.json({ liked: false });
+    return NextResponse.json(like);
   } catch (error) {
-    console.error("Error deleting like:", error);
+    console.error("Error liking snippet:", error);
     return NextResponse.json(
-      { error: "Failed to delete like" },
+      { error: "Failed to like snippet" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+): Promise<NextResponse> {
+  try {
+    const session = await getServerSession();
+
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      );
+    }
+
+    const like = await prisma.like.findFirst({
+      where: {
+        userId: user.id,
+        snippetId: params.id,
+      },
+    });
+
+    if (!like) {
+      return NextResponse.json(
+        { error: "Like not found" },
+        { status: 404 }
+      );
+    }
+
+    await prisma.like.delete({
+      where: { id: like.id },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error unliking snippet:", error);
+    return NextResponse.json(
+      { error: "Failed to unlike snippet" },
       { status: 500 }
     );
   }

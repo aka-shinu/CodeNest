@@ -1,5 +1,4 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/db";
 import { unstable_cache } from "next/cache";
@@ -72,7 +71,7 @@ const getSnippetFromDb = unstable_cache(
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
+): Promise<NextResponse> {
   try {
     const session = await getServerSession();
     const id = params.id;
@@ -107,12 +106,11 @@ export async function GET(
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
+): Promise<NextResponse> {
   try {
     const session = await getServerSession();
-    const id = params.id;
 
-    if (!session?.user?.id) {
+    if (!session?.user?.email) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
@@ -120,12 +118,8 @@ export async function DELETE(
     }
 
     const snippet = await prisma.snippet.findUnique({
-      where: {
-        id,
-      },
-      select: {
-        authorId: true,
-      },
+      where: { id: params.id },
+      select: { authorId: true },
     });
 
     if (!snippet) {
@@ -137,15 +131,13 @@ export async function DELETE(
 
     if (snippet.authorId !== session.user.id) {
       return NextResponse.json(
-        { error: "Not authorized" },
+        { error: "Not authorized to delete this snippet" },
         { status: 403 }
       );
     }
 
     await prisma.snippet.delete({
-      where: {
-        id,
-      },
+      where: { id: params.id },
     });
 
     return NextResponse.json({ success: true });
@@ -161,10 +153,9 @@ export async function DELETE(
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
+): Promise<NextResponse> {
   try {
     const session = await getServerSession();
-    const id = params.id;
 
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -173,21 +164,9 @@ export async function PATCH(
       );
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true }
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
-    }
-
     const snippet = await prisma.snippet.findUnique({
-      where: { id },
-      select: { authorId: true }
+      where: { id: params.id },
+      select: { authorId: true },
     });
 
     if (!snippet) {
@@ -197,23 +176,22 @@ export async function PATCH(
       );
     }
 
-    if (snippet.authorId !== user.id) {
+    if (snippet.authorId !== session.user.id) {
       return NextResponse.json(
-        { error: "Not authorized" },
+        { error: "Not authorized to update this snippet" },
         { status: 403 }
       );
     }
 
-    const body = await request.json();
+    const { title, code, language, description } = await request.json();
+
     const updatedSnippet = await prisma.snippet.update({
-      where: { id },
+      where: { id: params.id },
       data: {
-        title: body.title,
-        description: body.description,
-        code: body.code,
-        language: body.language,
-        tags: body.tags,
-        visibility: body.visibility,
+        title,
+        code,
+        language,
+        description,
       },
     });
 
