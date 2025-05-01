@@ -65,7 +65,7 @@ export default function SnippetPage({ params }: { params: Promise<{ id: string }
         router.push('/snippets');
       } finally {
         setIsLoading(false);
-      }
+}
     };
 
     fetchSnippet();
@@ -152,7 +152,7 @@ export default function SnippetPage({ params }: { params: Promise<{ id: string }
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        },
+      },
         credentials: 'include',
         body: JSON.stringify({ content: newComment }),
       });
@@ -167,15 +167,15 @@ export default function SnippetPage({ params }: { params: Promise<{ id: string }
         return {
           ...prev,
           comments: [comment, ...(prev.comments || [])],
-          _count: {
+        _count: {
             ...prev._count,
             comments: commentCount,
           },
         };
-      });
+    });
       setNewComment('');
       toast.success('Comment added successfully');
-    } catch (error) {
+  } catch (error) {
       toast.error('Failed to add comment');
     } finally {
       setIsSubmitting(false);
@@ -186,7 +186,7 @@ export default function SnippetPage({ params }: { params: Promise<{ id: string }
     if (!session) {
       toast.error('Please sign in to delete comments');
       return;
-    }
+  }
 
     setSnippet(prev => {
       if (!prev) return null;
@@ -215,7 +215,7 @@ export default function SnippetPage({ params }: { params: Promise<{ id: string }
       
       setSnippet(prev => {
         if (!prev) return null;
-        return {
+  return {
           ...prev,
           _count: {
             ...prev._count,
