@@ -71,11 +71,11 @@ const getSnippetFromDb = unstable_cache(
 
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession();
-    const id = context.params.id;
+    const id = params.id;
 
     // Get user ID from session if available
     const userId = session?.user?.email ? 
@@ -106,11 +106,11 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession();
-    const id = context.params.id;
+    const id = params.id;
 
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -160,11 +160,11 @@ export async function DELETE(
 
 export async function PATCH(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession();
-    const id = context.params.id;
+    const id = params.id;
 
     if (!session?.user?.email) {
       return NextResponse.json(
