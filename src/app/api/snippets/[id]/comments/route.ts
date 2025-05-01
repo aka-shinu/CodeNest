@@ -68,7 +68,7 @@ export async function POST(
       );
     }
 
-    const { content } = await request.json();
+    const { content } = await request.json() as { content: string };
 
     if (!content) {
       return NextResponse.json(

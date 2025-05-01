@@ -205,7 +205,15 @@ export async function PATCH(
       );
     }
 
-    const body = await request.json();
+    const body = await request.json() as {
+      title: string;
+      description: string;
+      code: string;
+      language: string;
+      tags: string[];
+      visibility: 'public' | 'private';
+    };
+
     const updatedSnippet = await prisma.snippet.update({
       where: { id },
       data: {

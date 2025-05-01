@@ -114,13 +114,19 @@ export async function POST(request: Request) {
       );
     }
 
+    const processedTags = Array.isArray(tags) 
+      ? tags 
+      : typeof tags === 'string' 
+        ? tags.split(',').map((t: string) => t.trim()).filter(Boolean)
+        : [];
+
     const snippet = await prisma.snippet.create({
       data: {
         title,
         description: description || "",
         code,
         language,
-        tags: Array.isArray(tags) ? tags : tags?.split(',').map(t => t.trim()).filter(Boolean) || [],
+        tags: processedTags,
         visibility: "public",
         authorId: user.id,
       },

@@ -13,7 +13,10 @@ export async function PATCH(request: Request) {
       );
     }
 
-    const { name, image } = await request.json();
+    const { name, image } = await request.json() as {
+      name?: string;
+      image?: string;
+    };
 
     const updatedUser = await prisma.user.update({
       where: {
