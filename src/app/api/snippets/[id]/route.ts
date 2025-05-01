@@ -118,7 +118,7 @@ export async function GET(
       }))?.id : 
       undefined;
 
-    const snippet = await getSnippetFromDb(id, userId);
+    const snippet = await getSnippetFromDb(id, userId) as SnippetWithLikes | null;
 
     if (!snippet) {
       return NextResponse.json(
