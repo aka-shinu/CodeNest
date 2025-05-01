@@ -129,7 +129,7 @@ export async function GET(
 
     return NextResponse.json({
       ...snippet,
-      isLiked: userId ? (snippet.likes?.length ?? 0) > 0 : false,
+      isLiked: userId ? (Array.isArray(snippet.likes) ? snippet.likes.length > 0 : false) : false,
       likes: undefined, // Remove the likes array from the response
     });
   } catch (error) {
