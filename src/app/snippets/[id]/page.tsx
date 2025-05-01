@@ -16,6 +16,7 @@ interface Comment {
   author: {
     name: string;
     image: string | null;
+    email: string;
   };
   createdAt: string;
 }

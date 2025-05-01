@@ -98,6 +98,7 @@ export async function POST(
             select: {
               name: true,
               image: true,
+              email: true,
             },
           },
         },
