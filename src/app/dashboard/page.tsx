@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import DashboardClient from "./dashboard-client";
+import type { Snippet } from "./dashboard-client";
 
 async function getMySnippets(userId: string) {
   const snippets = await prisma.snippet.findMany({
@@ -31,7 +32,8 @@ async function getMySnippets(userId: string) {
     ...snippet,
     tags: snippet.tags ?? [], // Ensure tags is never null
     description: snippet.description ?? "", // Ensure description is never null
-  }));
+    visibility: snippet.visibility as 'public' | 'private', // Ensure correct type for visibility
+  })) as Snippet[];
 }
 
 async function getLikedSnippets(userId: string) {
@@ -66,7 +68,8 @@ async function getLikedSnippets(userId: string) {
     ...snippet,
     tags: snippet.tags ?? [], // Ensure tags is never null
     description: snippet.description ?? "", // Ensure description is never null
-  }));
+    visibility: snippet.visibility as 'public' | 'private', // Ensure correct type for visibility
+  })) as Snippet[];
 }
 
 export default async function DashboardPage() {

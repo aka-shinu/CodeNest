@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Heart, MessageCircle } from "lucide-react";
 import Link from "next/link";
 
-type Snippet = {
+export type Snippet = {
   id: string;
   title: string;
   description: string | null;
