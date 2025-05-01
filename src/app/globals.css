@@ -1,0 +1,202 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+ 
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+ 
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+ 
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+ 
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 8s ease infinite;
+}
+
+/* Star field container */
+#starfield {
+  @apply fixed inset-0 overflow-hidden;
+  z-index: 0;
+}
+
+/* Individual star styling */
+.star {
+  @apply absolute rounded-full bg-white;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+/* Star sizes */
+.star-small {
+  @apply w-[1px] h-[1px];
+  opacity: 0.5;
+}
+
+.star-medium {
+  @apply w-[2px] h-[2px];
+  opacity: 0.7;
+}
+
+.star-large {
+  @apply w-[3px] h-[3px];
+  opacity: 0.9;
+}
+
+/* Star colors */
+.star-white { @apply bg-white; }
+.star-warm { @apply bg-[#fff9f0]; }
+.star-cream { @apply bg-[#fffdf0]; }
+
+/* Hover effects */
+.star:hover {
+  transform: scale(2.5);
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8));
+  cursor: pointer;
+  z-index: 1;
+}
+
+/* Base twinkle animation */
+@keyframes twinkle {
+  0%, 100% { opacity: var(--min-opacity, 0.2); }
+  50% { opacity: var(--max-opacity, 0.8); }
+}
+
+/* Floating animation */
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+/* Combined animations for different star types */
+.twinkle-1 {
+  --min-opacity: 0.2;
+  --max-opacity: 0.7;
+  animation: 
+    twinkle 4s ease-in-out infinite,
+    float 8s ease-in-out infinite;
+}
+
+.twinkle-2 {
+  --min-opacity: 0.3;
+  --max-opacity: 0.8;
+  animation: 
+    twinkle 6s ease-in-out infinite,
+    float 12s ease-in-out infinite;
+}
+
+.twinkle-3 {
+  --min-opacity: 0.4;
+  --max-opacity: 1;
+  animation: 
+    twinkle 8s ease-in-out infinite,
+    float 16s ease-in-out infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .star-small { @apply w-[0.5px] h-[0.5px]; }
+  .star-medium { @apply w-[1px] h-[1px]; }
+  .star-large { @apply w-[2px] h-[2px]; }
+  
+  .star:hover {
+    transform: scale(2);
+  }
+}
+
+/* Space background container */
+#space-background {
+  @apply fixed inset-0 overflow-hidden;
+  z-index: 0;
+  background: linear-gradient(to bottom, #0a0a0f, #050507);
+}
+
+/* Canvas styles */
+#space-background canvas {
+  @apply w-full h-full;
+  image-rendering: optimizeSpeed;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimize-contrast;
+  image-rendering: pixelated;
+  -ms-interpolation-mode: nearest-neighbor;
+} 
