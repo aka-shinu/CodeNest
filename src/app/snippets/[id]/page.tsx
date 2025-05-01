@@ -40,7 +40,7 @@ interface Snippet {
   isLiked?: boolean;
 }
 
-export default function SnippetPage({ params }: { params: { id: string } }) {
+export default function SnippetPage({ params }: { params: Promise<{ id: string }> }) {
   const { data: session } = useSession();
   const router = useRouter();
   const [snippet, setSnippet] = useState<Snippet | null>(null);
@@ -49,7 +49,7 @@ export default function SnippetPage({ params }: { params: { id: string } }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
 
-  const id = params.id;
+  const { id } = use(params);
 
   useEffect(() => {
     const fetchSnippet = async () => {

@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/db";
 
-export async function PATCH(request: NextRequest): Promise<NextResponse> {
+export async function PATCH(request: Request) {
   try {
     const session = await getServerSession();
 

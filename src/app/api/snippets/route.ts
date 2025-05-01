@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/db";
 import { unstable_cache } from "next/cache";
@@ -64,7 +64,7 @@ const getSnippetsFromDb = unstable_cache(
   { revalidate: process.env.NODE_ENV === "development" ? 30 : 300, tags: ["snippets"] }
 );
 
-export async function GET(request: NextRequest): Promise<NextResponse> {
+export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const language = searchParams.get("language");
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   }
 }
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
+export async function POST(request: Request) {
   try {
     const session = await getServerSession();
 
