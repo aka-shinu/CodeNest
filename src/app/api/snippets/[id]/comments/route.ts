@@ -4,8 +4,9 @@ import { prisma } from "@/lib/db";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Record<string, string> }
 ) {
+  const { id } = context.params;
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get("page") || "1");
   const limit = parseInt(searchParams.get("limit") || "5");
@@ -15,7 +16,7 @@ export async function GET(
     const [comments, total] = await Promise.all([
       prisma.comment.findMany({
         where: {
-          snippetId: params.id,
+          snippetId: id,
         },
         include: {
           author: {
@@ -33,7 +34,7 @@ export async function GET(
       }),
       prisma.comment.count({
         where: {
-          snippetId: params.id,
+          snippetId: id,
         },
       }),
     ]);
@@ -50,8 +51,9 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Record<string, string> }
 ) {
+  const { id } = context.params;
   try {
     const session = await getServerSession();
 
@@ -85,7 +87,7 @@ export async function POST(
         data: {
           content,
           authorId: user.id,
-          snippetId: params.id,
+          snippetId: id,
         },
         include: {
           author: {
@@ -99,7 +101,7 @@ export async function POST(
 
       const commentCount = await tx.comment.count({
         where: {
-          snippetId: params.id,
+          snippetId: id,
         },
       });
 
@@ -118,8 +120,9 @@ export async function POST(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Record<string, string> }
 ) {
+  const { id } = context.params;
   try {
     const session = await getServerSession();
     const { searchParams } = new URL(request.url);
@@ -167,7 +170,7 @@ export async function DELETE(
       });
 
       const commentCount = await tx.comment.count({
-        where: { snippetId: params.id }
+        where: { snippetId: id }
       });
 
       return { commentCount };
