@@ -10,6 +10,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Snippet } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 
+interface SnippetWithCount extends Snippet {
+  _count: {
+    views: number;
+    likes: number;
+    comments: number;
+  };
+}
+
 function SnippetSkeleton() {
   return (
     <Card className="group relative overflow-hidden border-neon-blue/20 bg-space-darker/50 backdrop-blur-sm">
@@ -31,12 +39,8 @@ function SnippetSkeleton() {
   );
 }
 
-interface SnippetsListProps {
-  snippets: Snippet[];
-}
-
 export default function SnippetsList() {
-  const [snippets, setSnippets] = useState<Snippet[]>([]);
+  const [snippets, setSnippets] = useState<SnippetWithCount[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -98,7 +102,7 @@ export default function SnippetsList() {
                 </span>
                 <span className="flex items-center gap-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-neon-purple animate-pulse-glow" />
-                  {snippet.views} views
+                  {snippet._count.views} views
                 </span>
               </div>
             </CardContent>
