@@ -40,7 +40,7 @@ interface Snippet {
   isLiked?: boolean;
 }
 
-export default function SnippetPage({ params }: { params: { id: string } }) {
+export default function SnippetPage({ params }: { params: Record<string, string> }) {
   const { data: session } = useSession();
   const router = useRouter();
   const [snippet, setSnippet] = useState<Snippet | null>(null);

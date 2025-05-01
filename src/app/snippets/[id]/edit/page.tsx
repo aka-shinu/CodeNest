@@ -43,7 +43,7 @@ function SkeletonLoader() {
   );
 }
 
-export default function EditSnippetPage({ params }: { params: { id: string } }) {
+export default function EditSnippetPage({ params }: { params: Record<string, string> }) {
   const router = useRouter();
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);

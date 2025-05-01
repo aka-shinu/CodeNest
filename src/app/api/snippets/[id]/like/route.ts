@@ -1,15 +1,15 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import type { RouteContext } from "next";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/db";
 
 export async function POST(
   request: NextRequest,
-  context: RouteContext
+  context: { params: Record<string, string> }
 ) {
   try {
     const session = await getServerSession();
+    const { id } = context.params;
 
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -22,7 +22,7 @@ export async function POST(
     const result = await prisma.$transaction(async (tx) => {
       // First verify the snippet exists
       const snippet = await tx.snippet.findUnique({
-        where: { id: context.params.id },
+        where: { id: id },
         select: { id: true }
       });
 
@@ -44,7 +44,7 @@ export async function POST(
         where: {
           userId_snippetId: {
             userId: user.id,
-            snippetId: context.params.id,
+            snippetId: id,
           },
         },
       });
@@ -55,7 +55,7 @@ export async function POST(
           where: {
             userId_snippetId: {
               userId: user.id,
-              snippetId: context.params.id,
+              snippetId: id,
             },
           },
         });
@@ -64,7 +64,7 @@ export async function POST(
         await tx.like.create({
           data: {
             userId: user.id,
-            snippetId: context.params.id,
+            snippetId: id,
           },
         });
       }
@@ -72,7 +72,7 @@ export async function POST(
       // Get final like count
       const likeCount = await tx.like.count({
         where: {
-          snippetId: context.params.id,
+          snippetId: id,
         },
       });
 
@@ -99,10 +99,11 @@ export async function POST(
 
 export async function DELETE(
   request: NextRequest,
-  context: RouteContext
+  context: { params: Record<string, string> }
 ) {
   try {
     const session = await getServerSession();
+    const { id } = context.params;
 
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -128,7 +129,7 @@ export async function DELETE(
       where: {
         userId_snippetId: {
           userId: user.id,
-          snippetId: context.params.id,
+          snippetId: id,
         },
       },
     });

@@ -1,6 +1,5 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import type { RouteContext } from "next";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/db";
 import { unstable_cache } from "next/cache";
@@ -72,7 +71,7 @@ const getSnippetFromDb = unstable_cache(
 
 export async function GET(
   request: NextRequest,
-  context: RouteContext
+  context: { params: Record<string, string> }
 ) {
   try {
     const session = await getServerSession();
@@ -107,7 +106,7 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  context: RouteContext
+  context: { params: Record<string, string> }
 ) {
   try {
     const session = await getServerSession();
@@ -162,7 +161,7 @@ export async function DELETE(
 
 export async function PATCH(
   request: NextRequest,
-  context: RouteContext
+  context: { params: Record<string, string> }
 ) {
   try {
     const session = await getServerSession();
