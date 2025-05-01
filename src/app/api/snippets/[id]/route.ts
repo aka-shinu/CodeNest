@@ -1,4 +1,6 @@
+import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import type { RouteContext } from "next";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/db";
 import { unstable_cache } from "next/cache";
@@ -69,12 +71,12 @@ const getSnippetFromDb = unstable_cache(
 );
 
 export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  request: NextRequest,
+  context: RouteContext
 ) {
   try {
     const session = await getServerSession();
-    const { id } = await params;
+    const { id } = context.params;
 
     // Get user ID from session if available
     const userId = session?.user?.email ? 
@@ -104,8 +106,8 @@ export async function GET(
 }
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  request: NextRequest,
+  context: RouteContext
 ) {
   try {
     const session = await getServerSession();
@@ -117,7 +119,7 @@ export async function DELETE(
       );
     }
 
-    const { id } = await params;
+    const { id } = context.params;
 
     const snippet = await prisma.snippet.findUnique({
       where: {
@@ -159,8 +161,8 @@ export async function DELETE(
 }
 
 export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  request: NextRequest,
+  context: RouteContext
 ) {
   try {
     const session = await getServerSession();
@@ -184,7 +186,7 @@ export async function PATCH(
       );
     }
 
-    const { id } = await params;
+    const { id } = context.params;
 
     const snippet = await prisma.snippet.findUnique({
       where: { id },

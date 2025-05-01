@@ -1,10 +1,12 @@
+import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import type { RouteContext } from "next";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/db";
 
 export async function POST(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: RouteContext
 ) {
   try {
     const session = await getServerSession();
@@ -20,7 +22,7 @@ export async function POST(
     const result = await prisma.$transaction(async (tx) => {
       // First verify the snippet exists
       const snippet = await tx.snippet.findUnique({
-        where: { id: params.id },
+        where: { id: context.params.id },
         select: { id: true }
       });
 
@@ -42,7 +44,7 @@ export async function POST(
         where: {
           userId_snippetId: {
             userId: user.id,
-            snippetId: params.id,
+            snippetId: context.params.id,
           },
         },
       });
@@ -53,16 +55,16 @@ export async function POST(
           where: {
             userId_snippetId: {
               userId: user.id,
-              snippetId: params.id,
+              snippetId: context.params.id,
             },
           },
         });
       } else {
         // Like - create new like
         await tx.like.create({
-      data: {
+          data: {
             userId: user.id,
-            snippetId: params.id,
+            snippetId: context.params.id,
           },
         });
       }
@@ -70,9 +72,9 @@ export async function POST(
       // Get final like count
       const likeCount = await tx.like.count({
         where: {
-        snippetId: params.id,
-      },
-    });
+          snippetId: context.params.id,
+        },
+      });
 
       return {
         liked: !existingLike,
@@ -96,8 +98,8 @@ export async function POST(
 }
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: RouteContext
 ) {
   try {
     const session = await getServerSession();
@@ -126,7 +128,7 @@ export async function DELETE(
       where: {
         userId_snippetId: {
           userId: user.id,
-          snippetId: params.id,
+          snippetId: context.params.id,
         },
       },
     });
