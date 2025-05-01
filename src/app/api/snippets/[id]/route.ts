@@ -20,6 +20,7 @@ const getSnippetFromDb = unstable_cache(
             select: {
               name: true,
               image: true,
+              email: true,
             },
           },
           comments: {

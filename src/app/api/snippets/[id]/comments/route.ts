@@ -28,6 +28,7 @@ export async function GET(
             select: {
               name: true,
               image: true,
+              email: true,
             },
           },
         },
@@ -44,7 +45,7 @@ export async function GET(
       }),
     ]);
 
-    return NextResponse.json({ comments, total });
+    return NextResponse.json(comments);
   } catch (error) {
     console.error("Error fetching comments:", error);
     return NextResponse.json(

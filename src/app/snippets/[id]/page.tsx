@@ -14,9 +14,9 @@ interface Comment {
   id: string;
   content: string;
   author: {
-    name: string;
+    name: string | null;
     image: string | null;
-    email: string;
+    email: string | null;
   };
   createdAt: string;
 }
@@ -30,6 +30,7 @@ interface Snippet {
   author: {
     name: string;
     image: string | null;
+    email: string | null;
   };
   createdAt: string;
   _count: {
