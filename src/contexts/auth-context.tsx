@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from 'react';
+import { signIn, signOut } from 'next-auth/react';
 
 interface User {
   id: string;
@@ -13,6 +14,8 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  signup: (email: string, password: string, name: string) => Promise<void>;
+  signupWithProvider: (provider: 'github' | 'google') => Promise<void>;
   logout: () => void;
 }
 
@@ -22,31 +25,68 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Mock login function - replace with real authentication later
-  const login = async (email: string, password: string) => {
+  const signup = async (email: string, password: string, name: string) => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock user data
-      setUser({
-        id: '1',
-        name: 'Test User',
-        email: email,
-        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix'
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password, name }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to sign up');
+      }
+
+      // After successful signup, log the user in
+      await signIn('credentials', {
+        email,
+        password,
+        callbackUrl: '/snippets',
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const logout = () => {
+  const signupWithProvider = async (provider: 'github' | 'google') => {
+    setIsLoading(true);
+    try {
+      await signIn(provider, {
+        callbackUrl: '/snippets',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const login = async (email: string, password: string) => {
+    setIsLoading(true);
+    try {
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        throw new Error('Invalid credentials');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    await signOut({ callbackUrl: '/' });
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, signup, signupWithProvider, logout }}>
       {children}
     </AuthContext.Provider>
   );
