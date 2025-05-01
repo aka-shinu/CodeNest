@@ -81,8 +81,8 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto px-6 py-12 max-w-7xl">
-        <h1 className="text-5xl font-bold mb-12 font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-[#00ffff] to-[#00a3ff]">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 max-w-7xl">
+        <h1 className="text-3xl sm:text-5xl font-bold mb-8 sm:mb-12 font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-[#00ffff] to-[#00a3ff]">
           Dashboard
         </h1>
         <DashboardSnippets

@@ -12,38 +12,24 @@ export async function GET(
   request: NextRequest,
   context: RouteParams
 ) {
-  const { searchParams } = new URL(request.url);
-  const page = parseInt(searchParams.get("page") || "1");
-  const limit = parseInt(searchParams.get("limit") || "5");
-  const skip = (page - 1) * limit;
-
   try {
-    const [comments, total] = await Promise.all([
-      prisma.comment.findMany({
-        where: {
-          snippetId: context.params.id,
-        },
-        include: {
-          author: {
-            select: {
-              name: true,
-              image: true,
-              email: true,
-            },
+    const comments = await prisma.comment.findMany({
+      where: {
+        snippetId: context.params.id,
+      },
+      include: {
+        author: {
+          select: {
+            name: true,
+            image: true,
+            email: true,
           },
         },
-        orderBy: {
-          createdAt: "desc",
-        },
-        take: limit,
-        skip: skip,
-      }),
-      prisma.comment.count({
-        where: {
-          snippetId: context.params.id,
-        },
-      }),
-    ]);
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
     return NextResponse.json(comments);
   } catch (error) {
@@ -105,13 +91,26 @@ export async function POST(
         },
       });
 
-      const commentCount = await tx.comment.count({
+      // Return all comments after creating new one
+      const comments = await tx.comment.findMany({
         where: {
           snippetId: context.params.id,
         },
+        include: {
+          author: {
+            select: {
+              name: true,
+              image: true,
+              email: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
       });
 
-      return { comment, commentCount };
+      return { comment, comments };
     });
 
     return NextResponse.json(result);

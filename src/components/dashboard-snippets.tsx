@@ -38,7 +38,7 @@ export function DashboardSnippets({ mySnippets, likedSnippets, user }: Dashboard
       <div className="relative">
         {/* Container for consistent height */}
         <div className="h-[56px] relative">
-          <TabsList className="relative grid w-full grid-cols-3 bg-transparent h-full">
+          <TabsList className="relative grid w-full grid-cols-3 bg-transparent h-full overflow-x-auto sm:overflow-visible">
             {/* Structural bottom border */}
             <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-[#00f0ff]/10" />
             
@@ -46,7 +46,7 @@ export function DashboardSnippets({ mySnippets, likedSnippets, user }: Dashboard
               value="my-snippets"
               className="relative group h-full transition-colors duration-200
                 data-[state=active]:text-[#00f0ff] text-[#8b95a8]
-                hover:text-[#00f0ff]"
+                hover:text-[#00f0ff] min-w-[120px] sm:min-w-0"
             >
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                    style={{
@@ -55,7 +55,7 @@ export function DashboardSnippets({ mySnippets, likedSnippets, user }: Dashboard
               
               {/* Center alignment container */}
               <div className="relative z-10 h-full flex items-center justify-center">
-                <span className="font-orbitron tracking-wide text-center">
+                <span className="font-orbitron tracking-wide text-center text-sm sm:text-base whitespace-nowrap">
                   My Snippets
                 </span>
               </div>
@@ -73,7 +73,7 @@ export function DashboardSnippets({ mySnippets, likedSnippets, user }: Dashboard
               value="liked-snippets"
               className="relative group h-full transition-colors duration-200
                 data-[state=active]:text-[#00f0ff] text-[#8b95a8]
-                hover:text-[#00f0ff]"
+                hover:text-[#00f0ff] min-w-[120px] sm:min-w-0"
             >
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                    style={{
@@ -81,7 +81,7 @@ export function DashboardSnippets({ mySnippets, likedSnippets, user }: Dashboard
                    }} />
               
               <div className="relative z-10 h-full flex items-center justify-center">
-                <span className="font-orbitron tracking-wide text-center">
+                <span className="font-orbitron tracking-wide text-center text-sm sm:text-base whitespace-nowrap">
                   Liked Snippets
                 </span>
               </div>
@@ -97,7 +97,7 @@ export function DashboardSnippets({ mySnippets, likedSnippets, user }: Dashboard
               value="settings"
               className="relative group h-full transition-colors duration-200
                 data-[state=active]:text-[#00f0ff] text-[#8b95a8]
-                hover:text-[#00f0ff]"
+                hover:text-[#00f0ff] min-w-[120px] sm:min-w-0"
             >
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                    style={{
@@ -105,7 +105,7 @@ export function DashboardSnippets({ mySnippets, likedSnippets, user }: Dashboard
                    }} />
               
               <div className="relative z-10 h-full flex items-center justify-center">
-                <span className="font-orbitron tracking-wide text-center">
+                <span className="font-orbitron tracking-wide text-center text-sm sm:text-base whitespace-nowrap">
                   Settings
                 </span>
               </div>
@@ -125,20 +125,20 @@ export function DashboardSnippets({ mySnippets, likedSnippets, user }: Dashboard
           variants={tabVariants}
           initial="hidden"
           animate="visible"
-          className="space-y-8 pt-10"
+          className="space-y-8 pt-6 sm:pt-10"
         >
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <h2 
-              className="text-[28px] font-orbitron font-bold text-[#00f0ff] tracking-wide"
+              className="text-[22px] sm:text-[28px] font-orbitron font-bold text-[#00f0ff] tracking-wide"
               style={headerStyles.title}
             >
               My Snippets
             </h2>
-            <p className="text-[#8b95a8] text-[15px] tracking-wide font-light leading-relaxed">
+            <p className="text-[#8b95a8] text-[14px] sm:text-[15px] tracking-wide font-light leading-relaxed">
               View and manage your code snippets
             </p>
           </div>
-          <div className="grid gap-6 pt-4">
+          <div className="grid gap-4 sm:gap-6 pt-2 sm:pt-4">
             <SnippetList snippets={mySnippets} showActions={true} />
           </div>
         </motion.div>
@@ -149,20 +149,20 @@ export function DashboardSnippets({ mySnippets, likedSnippets, user }: Dashboard
           variants={tabVariants}
           initial="hidden"
           animate="visible"
-          className="space-y-8 pt-10"
+          className="space-y-8 pt-6 sm:pt-10"
         >
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <h2 
-              className="text-[28px] font-orbitron font-bold text-[#00f0ff] tracking-wide"
+              className="text-[22px] sm:text-[28px] font-orbitron font-bold text-[#00f0ff] tracking-wide"
               style={headerStyles.title}
             >
               Liked Snippets
             </h2>
-            <p className="text-[#8b95a8] text-[15px] tracking-wide font-light leading-relaxed">
+            <p className="text-[#8b95a8] text-[14px] sm:text-[15px] tracking-wide font-light leading-relaxed">
               Your favorite code snippets
             </p>
           </div>
-          <div className="grid gap-6 pt-4">
+          <div className="grid gap-4 sm:gap-6 pt-2 sm:pt-4">
             <SnippetList snippets={likedSnippets} />
           </div>
         </motion.div>
@@ -173,20 +173,20 @@ export function DashboardSnippets({ mySnippets, likedSnippets, user }: Dashboard
           variants={tabVariants}
           initial="hidden"
           animate="visible"
-          className="space-y-8 pt-10"
+          className="space-y-8 pt-6 sm:pt-10"
         >
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <h2 
-              className="text-[28px] font-orbitron font-bold text-[#00f0ff] tracking-wide"
+              className="text-[22px] sm:text-[28px] font-orbitron font-bold text-[#00f0ff] tracking-wide"
               style={headerStyles.title}
             >
               Profile Settings
             </h2>
-            <p className="text-[#8b95a8] text-[15px] tracking-wide font-light leading-relaxed">
+            <p className="text-[#8b95a8] text-[14px] sm:text-[15px] tracking-wide font-light leading-relaxed">
               Manage your account preferences
             </p>
           </div>
-          <div className="pt-4">
+          <div className="pt-2 sm:pt-4">
             <ProfileSettings user={user} />
           </div>
         </motion.div>
