@@ -52,25 +52,25 @@ export default function SnippetPage({ params }: { params: { id: string } }) {
 
   const { id } = params;
 
-  useEffect(() => {
-    const fetchSnippet = async () => {
-      try {
-        const response = await fetch(`/api/snippets/${id}`);
-        if (!response.ok) {
-          throw new Error('Snippet not found');
-        }
-        const data = await response.json();
-        setSnippet(data);
-      } catch (error) {
-        console.error('Failed to fetch snippet:', error);
-        router.push('/snippets');
-      } finally {
-        setIsLoading(false);
+  const fetchSnippet = async () => {
+    try {
+      const response = await fetch(`/api/snippets/${id}`);
+      if (!response.ok) {
+        throw new Error('Snippet not found');
       }
-    };
+      const data = await response.json();
+      setSnippet(data);
+    } catch (error) {
+      console.error('Failed to fetch snippet:', error);
+      router.push('/snippets');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchSnippet();
-  }, [id, router]);
+  }, [id]);
 
   const handleLike = async () => {
     if (!session) {
@@ -84,21 +84,6 @@ export default function SnippetPage({ params }: { params: { id: string } }) {
 
     setIsLiking(true);
 
-    const previousState = snippet;
-
-    setSnippet(prev => {
-      if (!prev) return null;
-      const newLikeCount = Math.max(0, prev.isLiked ? prev._count.likes - 1 : prev._count.likes + 1);
-      return {
-        ...prev,
-        _count: {
-          ...prev._count,
-          likes: newLikeCount,
-        },
-        isLiked: !prev.isLiked,
-      };
-    });
-
     try {
       const response = await fetch(`/api/snippets/${id}/like`, {
         method: 'POST',
@@ -109,23 +94,8 @@ export default function SnippetPage({ params }: { params: { id: string } }) {
         throw new Error('Failed to like snippet');
       }
 
-      const { liked, likeCount } = await response.json();
-      
-      setSnippet(prev => {
-        if (!prev) return null;
-        return {
-          ...prev,
-          _count: {
-            ...prev._count,
-            likes: Math.max(0, likeCount),
-          },
-          isLiked: liked,
-        };
-      });
+      await fetchSnippet(); // Refresh the snippet data
     } catch (error) {
-      if (previousState) {
-        setSnippet(previousState);
-      }
       toast.error('Failed to like snippet');
     } finally {
       setTimeout(() => {
@@ -153,7 +123,7 @@ export default function SnippetPage({ params }: { params: { id: string } }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-      },
+        },
         credentials: 'include',
         body: JSON.stringify({ content: newComment }),
       });
@@ -162,21 +132,21 @@ export default function SnippetPage({ params }: { params: { id: string } }) {
         throw new Error('Failed to add comment');
       }
 
-      const { comment, commentCount } = await response.json();
+      const { comments } = await response.json();
       setSnippet(prev => {
         if (!prev) return null;
         return {
           ...prev,
-          comments: [comment, ...(prev.comments || [])],
-        _count: {
+          comments: comments,
+          _count: {
             ...prev._count,
-            comments: commentCount,
+            comments: comments.length,
           },
         };
-    });
+      });
       setNewComment('');
       toast.success('Comment added successfully');
-  } catch (error) {
+    } catch (error) {
       toast.error('Failed to add comment');
     } finally {
       setIsSubmitting(false);
@@ -187,20 +157,7 @@ export default function SnippetPage({ params }: { params: { id: string } }) {
     if (!session) {
       toast.error('Please sign in to delete comments');
       return;
-  }
-
-    setSnippet(prev => {
-      if (!prev) return null;
-      const updatedComments = prev.comments.filter(c => c.id !== commentId);
-      return {
-        ...prev,
-        comments: updatedComments,
-        _count: {
-          ...prev._count,
-          comments: prev._count.comments - 1,
-        },
-      };
-    });
+    }
 
     try {
       const response = await fetch(`/api/snippets/${id}/comments?commentId=${commentId}`, {
@@ -212,26 +169,22 @@ export default function SnippetPage({ params }: { params: { id: string } }) {
         throw new Error('Failed to delete comment');
       }
 
-      const { commentCount } = await response.json();
-      
+      const { comments } = await response.json();
       setSnippet(prev => {
         if (!prev) return null;
-  return {
+        return {
           ...prev,
+          comments: comments,
           _count: {
             ...prev._count,
-            comments: commentCount,
+            comments: comments.length,
           },
         };
       });
       toast.success('Comment deleted successfully');
     } catch (error) {
-      const response = await fetch(`/api/snippets/${id}`);
-      if (response.ok) {
-        const data = await response.json();
-        setSnippet(data);
-      }
       toast.error('Failed to delete comment');
+      await fetchSnippet(); // Refresh the snippet data if delete fails
     }
   };
 

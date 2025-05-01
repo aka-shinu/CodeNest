@@ -95,7 +95,11 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(snippet);
+    return NextResponse.json({
+      ...snippet,
+      isLiked: userId ? snippet.likes.length > 0 : false,
+      likes: undefined, // Remove the likes array from the response
+    });
   } catch (error) {
     console.error("Error fetching snippet:", error);
     return NextResponse.json(

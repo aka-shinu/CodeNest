@@ -91,7 +91,12 @@ export async function POST(
         },
       });
 
-      // Return all comments after creating new one
+      const commentCount = await tx.comment.count({
+        where: {
+          snippetId: context.params.id,
+        },
+      });
+
       const comments = await tx.comment.findMany({
         where: {
           snippetId: context.params.id,
@@ -110,7 +115,7 @@ export async function POST(
         },
       });
 
-      return { comment, comments };
+      return { comment, comments, commentCount };
     });
 
     return NextResponse.json(result);
@@ -173,11 +178,30 @@ export async function DELETE(
         where: { id: commentId }
       });
 
-      const commentCount = await tx.comment.count({
-        where: { snippetId: context.params.id }
-      });
+      const [commentCount, comments] = await Promise.all([
+        tx.comment.count({
+          where: { snippetId: context.params.id }
+        }),
+        tx.comment.findMany({
+          where: {
+            snippetId: context.params.id,
+          },
+          include: {
+            author: {
+              select: {
+                name: true,
+                image: true,
+                email: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        })
+      ]);
 
-      return { commentCount };
+      return { commentCount, comments };
     });
 
     return NextResponse.json(result);
