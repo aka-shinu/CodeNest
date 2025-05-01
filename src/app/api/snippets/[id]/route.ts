@@ -71,11 +71,11 @@ const getSnippetFromDb = unstable_cache(
 
 export async function GET(
   request: NextRequest,
-  context: { params: Record<string, string> }
+  context: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession();
-    const { id } = context.params;
+    const id = context.params.id;
 
     // Get user ID from session if available
     const userId = session?.user?.email ? 
@@ -106,10 +106,11 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  context: { params: Record<string, string> }
+  context: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession();
+    const id = context.params.id;
 
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -117,8 +118,6 @@ export async function DELETE(
         { status: 401 }
       );
     }
-
-    const { id } = context.params;
 
     const snippet = await prisma.snippet.findUnique({
       where: {
@@ -161,10 +160,11 @@ export async function DELETE(
 
 export async function PATCH(
   request: NextRequest,
-  context: { params: Record<string, string> }
+  context: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession();
+    const id = context.params.id;
 
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -184,8 +184,6 @@ export async function PATCH(
         { status: 404 }
       );
     }
-
-    const { id } = context.params;
 
     const snippet = await prisma.snippet.findUnique({
       where: { id },

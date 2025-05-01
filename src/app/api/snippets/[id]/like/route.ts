@@ -5,11 +5,11 @@ import { prisma } from "@/lib/db";
 
 export async function POST(
   request: NextRequest,
-  context: { params: Record<string, string> }
+  context: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession();
-    const { id } = context.params;
+    const id = context.params.id;
 
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -99,11 +99,11 @@ export async function POST(
 
 export async function DELETE(
   request: NextRequest,
-  context: { params: Record<string, string> }
+  context: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession();
-    const { id } = context.params;
+    const id = context.params.id;
 
     if (!session?.user?.email) {
       return NextResponse.json(
