@@ -17,7 +17,7 @@ export async function PATCH(request: Request) {
 
     const updatedUser = await prisma.user.update({
       where: {
-        email: session.user.email,
+        email: session.user.email || '',
       },
       data: {
         name: name || null,

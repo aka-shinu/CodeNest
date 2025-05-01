@@ -9,7 +9,6 @@ import Link from 'next/link';
 import { toast } from 'react-hot-toast';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { use } from 'react';
 
 interface Comment {
   id: string;
@@ -40,7 +39,7 @@ interface Snippet {
   isLiked?: boolean;
 }
 
-export default function SnippetPage({ params }: { params: Promise<{ id: string }> }) {
+export default function SnippetPage({ params }: { params: { id: string } }) {
   const { data: session } = useSession();
   const router = useRouter();
   const [snippet, setSnippet] = useState<Snippet | null>(null);
@@ -49,7 +48,7 @@ export default function SnippetPage({ params }: { params: Promise<{ id: string }
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
 
-  const { id } = use(params);
+  const { id } = params;
 
   useEffect(() => {
     const fetchSnippet = async () => {
@@ -65,7 +64,7 @@ export default function SnippetPage({ params }: { params: Promise<{ id: string }
         router.push('/snippets');
       } finally {
         setIsLoading(false);
-}
+      }
     };
 
     fetchSnippet();

@@ -79,7 +79,7 @@ export async function POST(
 
     const result = await prisma.$transaction(async (tx) => {
       const user = await tx.user.findUnique({
-        where: { email: session.user.email },
+        where: { email: session.user.email || '' },
         select: { id: true }
       });
 
@@ -147,7 +147,7 @@ export async function DELETE(
 
     const result = await prisma.$transaction(async (tx) => {
       const user = await tx.user.findUnique({
-        where: { email: session.user.email },
+        where: { email: session.user.email || '' },
         select: { id: true }
       });
 

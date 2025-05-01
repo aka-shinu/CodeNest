@@ -29,7 +29,7 @@ export async function POST(
       }
 
       const user = await tx.user.findUnique({
-        where: { email: session.user.email },
+        where: { email: session.user.email || '' },
         select: { id: true }
       });
 
