@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/db";
+import { authOptions } from "@/lib/auth";
+
+type Context = { params: { id: string } };
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: Context
 ): Promise<NextResponse> {
-  const id = params.id;
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get("page") || "1");
   const limit = parseInt(searchParams.get("limit") || "5");
@@ -16,7 +18,7 @@ export async function GET(
     const [comments, total] = await Promise.all([
       prisma.comment.findMany({
         where: {
-          snippetId: id,
+          snippetId: context.params.id,
         },
         include: {
           author: {
@@ -34,7 +36,7 @@ export async function GET(
       }),
       prisma.comment.count({
         where: {
-          snippetId: id,
+          snippetId: context.params.id,
         },
       }),
     ]);
@@ -51,11 +53,10 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: Context
 ): Promise<NextResponse> {
-  const id = params.id;
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -87,7 +88,7 @@ export async function POST(
         data: {
           content,
           authorId: user.id,
-          snippetId: id,
+          snippetId: context.params.id,
         },
         include: {
           author: {
@@ -101,7 +102,7 @@ export async function POST(
 
       const commentCount = await tx.comment.count({
         where: {
-          snippetId: id,
+          snippetId: context.params.id,
         },
       });
 
@@ -120,11 +121,10 @@ export async function POST(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: Context
 ): Promise<NextResponse> {
-  const id = params.id;
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     const { searchParams } = new URL(request.url);
     const commentId = searchParams.get("commentId");
 
@@ -170,7 +170,7 @@ export async function DELETE(
       });
 
       const commentCount = await tx.comment.count({
-        where: { snippetId: id }
+        where: { snippetId: context.params.id }
       });
 
       return { commentCount };
