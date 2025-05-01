@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 
-export function CommentForm({ snippetId }: { snippetId: string }) {
+export default function CommentForm({ snippetId }: { snippetId: string }) {
   const { data: session } = useSession();
   const { toast } = useToast();
   const [content, setContent] = useState("");

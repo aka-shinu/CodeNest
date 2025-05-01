@@ -13,10 +13,24 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Snippet as PrismaSnippet } from "@prisma/client";
+import dynamic from "next/dynamic";
 
 // Lazy load components that are not immediately needed
-const CommentsList = lazy(() => import("@/components/comments-list"));
-const CommentForm = lazy(() => import("@/components/comment-form"));
+const CommentsList = dynamic(() => import('./comments-list'), {
+  loading: () => <div className="animate-pulse space-y-4">
+    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+    <div className="h-4 bg-gray-200 rounded"></div>
+    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+  </div>
+});
+
+const CommentForm = dynamic(() => import('./comment-form'), {
+  loading: () => <div className="animate-pulse space-y-4">
+    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+    <div className="h-4 bg-gray-200 rounded"></div>
+    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+  </div>
+});
 
 interface Snippet {
   id: string;

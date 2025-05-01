@@ -19,7 +19,7 @@ type Comment = {
 
 const COMMENTS_PER_PAGE = 5;
 
-export function CommentsList({ snippetId }: { snippetId: string }) {
+export default function CommentsList({ snippetId }: { snippetId: string }) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
