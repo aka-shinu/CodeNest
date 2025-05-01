@@ -5,6 +5,10 @@ import { useSession } from "next-auth/react";
 import { Search } from "lucide-react";
 import { SnippetCard, SnippetCardSkeleton } from "@/components/SnippetCard";
 import { CreateSnippetDialog } from "@/components/CreateSnippetDialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { Snippet as PrismaSnippet } from "@prisma/client";
 
 const LANGUAGES = [
   "all",
@@ -23,6 +27,23 @@ const LANGUAGES = [
   "shell",
   "other",
 ];
+
+interface Snippet {
+  id: string;
+  title: string;
+  description: string;
+  language: string;
+  tags: string[];
+  author: {
+    name: string;
+    image: string | null;
+  };
+  createdAt: string;
+  _count: {
+    likes: number;
+    comments: number;
+  };
+}
 
 export default function SnippetsPage() {
   const { data: session } = useSession();
