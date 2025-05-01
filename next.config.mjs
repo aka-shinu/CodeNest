@@ -49,4 +49,4 @@ const nextConfig = {
     // Enable static optimization
   };
   
-  module.exports = nextConfig; 
+export default nextConfig
