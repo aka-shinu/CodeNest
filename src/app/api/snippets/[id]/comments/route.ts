@@ -1,10 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import type { RouteContext } from "next";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/db";
 
 export async function GET(
   request: NextRequest,
-  context: { params: Record<string, string> }
+  context: RouteContext
 ) {
   const { id } = context.params;
   const { searchParams } = new URL(request.url);
@@ -51,7 +53,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  context: { params: Record<string, string> }
+  context: RouteContext
 ) {
   const { id } = context.params;
   try {
@@ -120,7 +122,7 @@ export async function POST(
 
 export async function DELETE(
   request: NextRequest,
-  context: { params: Record<string, string> }
+  context: RouteContext
 ) {
   const { id } = context.params;
   try {
