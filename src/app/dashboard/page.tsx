@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import DashboardClient from "./dashboard-client";
 
 async function getMySnippets(userId: string) {
-  return prisma.snippet.findMany({
+  const snippets = await prisma.snippet.findMany({
     where: {
       authorId: userId,
     },
@@ -26,10 +26,16 @@ async function getMySnippets(userId: string) {
       createdAt: "desc",
     },
   });
+
+  return snippets.map(snippet => ({
+    ...snippet,
+    tags: snippet.tags ?? [], // Ensure tags is never null
+    description: snippet.description ?? "", // Ensure description is never null
+  }));
 }
 
 async function getLikedSnippets(userId: string) {
-  return prisma.snippet.findMany({
+  const snippets = await prisma.snippet.findMany({
     where: {
       likes: {
         some: {
@@ -55,6 +61,12 @@ async function getLikedSnippets(userId: string) {
       createdAt: "desc",
     },
   });
+
+  return snippets.map(snippet => ({
+    ...snippet,
+    tags: snippet.tags ?? [], // Ensure tags is never null
+    description: snippet.description ?? "", // Ensure description is never null
+  }));
 }
 
 export default async function DashboardPage() {

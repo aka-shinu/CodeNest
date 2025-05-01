@@ -7,9 +7,14 @@ import Link from "next/link";
 type Snippet = {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   language: string;
-  tags?: string[];
+  code: string;
+  authorId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  visibility: 'public' | 'private';
+  tags: string[];
   author: {
     name: string | null;
     image: string | null;
@@ -123,7 +128,7 @@ export default function DashboardClient({ mySnippets, likedSnippets }: Dashboard
                     <span className="px-2 py-1 text-xs rounded-md bg-gray-700/50 text-gray-300">
                       {snippet.language}
                     </span>
-                    {snippet.tags?.map((tag) => (
+                    {snippet.tags.map((tag) => (
                       <span key={tag} className="px-2 py-1 text-xs rounded-md bg-gray-700/50 text-gray-300">
                         {tag}
                       </span>
